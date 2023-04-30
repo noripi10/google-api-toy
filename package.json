@@ -6,7 +6,7 @@
   "scripts": {
     "gen": "ts-node -r tsconfig-paths/register src/libs/gen-token.ts",
     "tsc:check": "tsc --noEmit",
-    "dev": "ts-node-dev --respawn -r tsconfig-paths/register src/index.ts",
+    "dev": "GOOGLE_APPLICATION_CREDENTIALS=./service_account.json ts-node-dev --respawn -r tsconfig-paths/register src/index.ts",
     "build": "npx rimraf ./dist && tsc",
     "prev": "node ./dist/src/index.js"
   },
@@ -22,6 +22,6 @@
   "dependencies": {
     "crypto-js": "^4.1.1",
     "glob": "^8.0.3",
-    "googleapis": "^109.0.1"
+    "googleapis": "^118.0.0"
   }
 }

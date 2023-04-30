@@ -2,9 +2,12 @@ import { google } from 'googleapis';
 import { getClient } from './get-token';
 
 export const calendar = async () => {
-  const client = await getClient();
+  // const client = await getClient();
 
-  const gcalendar = google.calendar({ version: 'v3', auth: client });
+  const gcalendar = google.calendar({
+    version: 'v3',
+    // auth: client
+  });
 
   const list = await gcalendar.calendarList.get({ calendarId: 'sgym.snk@gmail.com' });
   console.info(list);

@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import { google } from 'googleapis';
 import { CredentialProps } from '@/@types/credential';
+import { SCOPES } from '@/constants';
 
 // 参考文献
 // https://qiita.com/kompiro/items/8e4c4d79cbbb5a3c95f6
@@ -20,7 +21,8 @@ export const getClientFromJson = async () => {
   const clientId = installed['client_id'];
   const clientSecret = installed['client_secret'];
   // Redirect先は固定値
-  const redirectUrl = 'urn:ietf:wg:oauth:2.0:oob';
+  const redirectUrl = credentials.installed.redirect_uris[0];
+  // const redirectUrl = 'urn:ietf:wg:oauth:2.0:oob';
 
   return { clientId, clientSecret, redirectUrl };
 };
@@ -42,7 +44,27 @@ export const getClient = async () => {
   client.setCredentials({
     refresh_token: refreshToken,
   });
+
+  // https://developers.google.com/identity/protocols/oauth2/web-server?hl=ja#offline
+  client.on('tokens', (tokens) => {
+    console.info('tokens reflesh: ', tokens);
+    // client.setCredentials(tokens);
+    client.setCredentials({ refresh_token: tokens.refresh_token });
+  });
   await client.refreshAccessToken();
 
   return client;
+};
+
+// ADCによる認証
+export const getClientAdc = async () => {
+  const auth = new google.auth.GoogleAuth({
+    scopes: SCOPES,
+  });
+
+  const client = await auth.getClient();
+  const projectId = await auth.getProjectId();
+  // console.info({ client, projectId });
+
+  return { client, projectId };
 };

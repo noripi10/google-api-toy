@@ -1,10 +1,13 @@
 import { google } from 'googleapis';
-import { getClient } from './get-token';
+import { getClientAdc } from './get-token';
 
 export const youtube = async () => {
-  const client = await getClient();
+  // const { client } = await getClientAdc();
 
-  const youtube = google.youtube({ version: 'v3', auth: client });
+  const youtube = google.youtube({
+    version: 'v3',
+    // auth: client
+  });
 
   const list = await youtube.search.list({
     part: ['id'],
