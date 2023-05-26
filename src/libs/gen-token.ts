@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'node:fs/promises';
 import readline from 'readline';
+import { exec } from 'child_process';
 
 import { google } from 'googleapis';
 import { getClientFromJson } from '@/libs/get-token';
@@ -17,6 +18,8 @@ export const generateToken = async () => {
     include_granted_scopes: true,
   });
   console.log({ url });
+
+  exec(`open "${url}"`);
 
   // 画面から取得したコード貼り付けてトークン発行
   const rl = readline.createInterface({

@@ -30,7 +30,16 @@ export const getClientFromJson = async () => {
 export const getRefreshToken = async () => {
   const contentsToken = await fs.readFile(path.join(process.cwd(), 'tokens.json'), 'utf-8');
   const token = JSON.parse(contentsToken);
+  const accessToken = token['access_token'];
   const refreshToken = token['refresh_token'];
+
+  const url = `https://oauth2.googleapis.com/tokeninfo?access_token=${accessToken}`;
+  const result = await fetch(url);
+  const data = await result.json();
+
+  if ('expires_in' in data) {
+    console.info('access_token expires in');
+  }
 
   return { refreshToken };
 };
@@ -60,6 +69,7 @@ export const getClient = async () => {
 export const getClientAdc = async () => {
   const auth = new google.auth.GoogleAuth({
     scopes: SCOPES,
+    keyFile: path.join(process.cwd(), 'practiceapp-567a6-5125a155cec2.json'),
   });
 
   const client = await auth.getClient();
