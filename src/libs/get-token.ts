@@ -69,7 +69,7 @@ export const getClient = async () => {
 export const getClientAdc = async () => {
   const auth = new google.auth.GoogleAuth({
     scopes: SCOPES,
-    keyFile: path.join(process.cwd(), 'practiceapp-567a6-5125a155cec2.json'),
+    keyFile: path.join(process.cwd(), 'service_account.json'),
   });
 
   const client = await auth.getClient();

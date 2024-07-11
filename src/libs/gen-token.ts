@@ -10,7 +10,9 @@ import { SCOPES } from '@/constants';
 export const generateToken = async () => {
   const { clientId, clientSecret, redirectUrl } = await getClientFromJson();
 
-  const client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
+  const redirectUrlWithPort = `${redirectUrl}:3000`;
+
+  const client = new google.auth.OAuth2(clientId, clientSecret, redirectUrlWithPort);
 
   const url = client.generateAuthUrl({
     access_type: 'offline',
@@ -27,9 +29,10 @@ export const generateToken = async () => {
     output: process.stdout,
   });
 
-  rl.question('Copy code : ', (code: string) => {
+  rl.question('Copy code :', (code: string) => {
     // console.log({ code });
     client.getToken(code, async (err, tokens) => {
+      console.log(err, tokens);
       if (!err && tokens) {
         const savePath = path.join(process.cwd(), 'tokens.json');
         try {
@@ -41,6 +44,8 @@ export const generateToken = async () => {
         console.log(`${savePath}へTokenを保存しました`);
       } else console.error('トークンの発行に失敗しました');
     });
+
+    process.exit();
   });
 };
 

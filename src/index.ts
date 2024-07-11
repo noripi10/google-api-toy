@@ -1,6 +1,6 @@
 import { google } from 'googleapis';
 
-import { getClient } from '@/libs/get-token';
+import { getClient, getClientAdc } from '@/libs/get-token';
 import { compute } from '@/libs/compute';
 import { youtube } from '@/libs/youtube';
 import { gmail } from '@/libs/gmail';
@@ -9,7 +9,9 @@ import { sheets } from './libs/sheets';
 
 const main = async () => {
   console.log('start index.ts');
+
   const client = await getClient();
+
   google.options({ auth: client });
 
   // #compute
@@ -21,7 +23,7 @@ const main = async () => {
   // // #gmail api
   // await gmail();
 
-  // // #google calendar api
+  // #google calendar api
   // await calendar();
 
   // // # sheets api
