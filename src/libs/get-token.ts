@@ -4,6 +4,7 @@ import path from 'node:path';
 import { google } from 'googleapis';
 import { CredentialProps } from '@/@types/credential';
 import { SCOPES } from '@/constants';
+import { generateToken } from './gen-token';
 
 // 参考文献
 // https://qiita.com/kompiro/items/8e4c4d79cbbb5a3c95f6
@@ -27,21 +28,27 @@ export const getClientFromJson = async () => {
   return { clientId, clientSecret, redirectUrl };
 };
 
-export const getRefreshToken = async () => {
-  const contentsToken = await fs.readFile(path.join(process.cwd(), 'tokens.json'), 'utf-8');
-  const token = JSON.parse(contentsToken);
-  const accessToken = token['access_token'];
-  const refreshToken = token['refresh_token'];
+type GetRefreshToken = ReturnType<typeof getRefreshToken>;
 
-  const url = `https://oauth2.googleapis.com/tokeninfo?access_token=${accessToken}`;
-  const result = await fetch(url);
-  const data = await result.json();
+export const getRefreshToken = async (isReCall?: boolean): Promise<{ refreshToken: string | null }> => {
+  try {
+    const contentsToken = await fs.readFile(path.join(process.cwd(), 'tokens.json'), 'utf-8');
+    const token = JSON.parse(contentsToken);
+    const accessToken = token['access_token'];
+    let refreshToken = token['refresh_token'];
 
-  if ('expires_in' in data) {
-    console.info('access_token expires in');
+    const url = `https://oauth2.googleapis.com/tokeninfo?access_token=${accessToken}`;
+    const result = await fetch(url);
+    const data = await result.json();
+
+    if (!('expires_in' in data)) {
+      console.info('access_token expires in');
+      refreshToken = null;
+    }
+    return { refreshToken };
+  } catch {
+    return { refreshToken: null };
   }
-
-  return { refreshToken };
 };
 
 // 各APIのauthに渡すOAuth Client
@@ -50,6 +57,10 @@ export const getClient = async () => {
   const { refreshToken } = await getRefreshToken();
 
   const client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
+
+  if (!refreshToken) {
+    throw new Error('Refresh Token Invalid. Required Generate Token.');
+  }
   client.setCredentials({
     refresh_token: refreshToken,
   });

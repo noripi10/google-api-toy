@@ -37,15 +37,15 @@ export const generateToken = async () => {
         const savePath = path.join(process.cwd(), 'tokens.json');
         try {
           if (await fs.stat(savePath)) {
-            fs.rm(savePath);
+            await fs.rm(savePath);
           }
         } catch {}
-        fs.writeFile(savePath, JSON.stringify(tokens, null, 2), 'utf-8');
+        await fs.writeFile(savePath, JSON.stringify(tokens, null, 2), 'utf-8');
         console.log(`${savePath}へTokenを保存しました`);
       } else console.error('トークンの発行に失敗しました');
-    });
 
-    process.exit();
+      process.exit(0);
+    });
   });
 };
 
