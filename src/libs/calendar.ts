@@ -18,21 +18,21 @@ export const calendar = async () => {
     // auth: client
   });
 
-  const calendarList = await gcalendar.calendarList.list();
-  console.info(calendarList);
+  // const calendarList = await gcalendar.calendarList.list();
+  // console.info(calendarList);
 
-  const timeMin = dayjs().format();
+  const timeMin = dayjs().add(-2, 'month').format();
   console.log(timeMin);
   // const tokyoTimeMin = moment().tz('Asia/Tokyo').toISOString(true);
 
   const events = await gcalendar.events.list({
-    calendarId: 'sgym.snk@gmail.com',
-    // orderBy: 'startTime',
-    // singleEvents: true,
+    calendarId: 'primary',
+    // calendarId: 'sgym.snk@gmail.com',
     timeMin,
-    maxResults: 10,
-    singleEvents: true,
-    orderBy: 'startTime',
+    maxResults: 5,
+    // singleEvents: true,
+    // orderBy: 'startTime',
   });
+
   console.info(events.data.items);
 };

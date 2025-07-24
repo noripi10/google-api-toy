@@ -6,13 +6,6 @@ import { CredentialProps } from '@/@types/credential';
 import { SCOPES } from '@/constants';
 import { generateToken } from './gen-token';
 
-// 参考文献
-// https://qiita.com/kompiro/items/8e4c4d79cbbb5a3c95f6
-// Google API Node.js List
-// https://googleapis.dev/nodejs/googleapis/latest/
-// Scope List
-// https://developers.google.com/identity/protocols/oauth2/scopes
-
 export const getClientFromJson = async () => {
   // OAuth Client(Desktop)をGCPで作成してJSONダウンロード
   // JSONファイル内の記載されているclient_id, client_secret
@@ -42,8 +35,8 @@ export const getRefreshToken = async (isReCall?: boolean): Promise<{ refreshToke
     const data = await result.json();
 
     if (!('expires_in' in data)) {
-      console.info('access_token expires in');
-      refreshToken = null;
+      console.info('** Access Token Expired **');
+      // refreshToken = null;
     }
     return { refreshToken };
   } catch {
@@ -59,19 +52,22 @@ export const getClient = async () => {
   const client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
 
   if (!refreshToken) {
-    throw new Error('Refresh Token Invalid. Required Generate Token.');
+    throw new Error('** Refresh Token Invalid. Required Generate Token. **');
   }
-  client.setCredentials({
-    refresh_token: refreshToken,
-  });
 
   // https://developers.google.com/identity/protocols/oauth2/web-server?hl=ja#offline
   client.on('tokens', (tokens) => {
     console.info('tokens reflesh: ', tokens);
-    // client.setCredentials(tokens);
     client.setCredentials({ refresh_token: tokens.refresh_token });
   });
+
+  client.setCredentials({
+    refresh_token: refreshToken,
+  });
   await client.refreshAccessToken();
+
+  const result = await client.getAccessToken();
+  console.log({ result });
 
   return client;
 };

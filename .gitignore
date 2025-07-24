@@ -143,8 +143,8 @@ dist
 
 # End of https://www.toptal.com/developers/gitignore/api/node
 
-
-
 credentials.json
 tokens.json
 service_account.json
+
+*.mp3

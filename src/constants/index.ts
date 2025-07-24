@@ -1,5 +1,6 @@
 // ※Scopeを変更したらトークン再発行必要
 export const SCOPES = [
+  'https://www.googleapis.com/auth/cloud-platform',
   'https://www.googleapis.com/auth/compute',
   'https://mail.google.com/',
   'https://www.googleapis.com/auth/youtube',
