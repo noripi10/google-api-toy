@@ -1,3 +1,5 @@
+import { JSONClient } from 'google-auth-library/build/src/auth/googleauth';
+import { BaseExternalAccountClient, GoogleAuth, OAuth2Client } from 'google-auth-library';
 export interface CredentialProps {
   installed: Installed;
 }
@@ -11,3 +13,5 @@ export interface Installed {
   client_secret: string;
   redirect_uris: string[];
 }
+
+export type GoogleCLientWithAuth = string | BaseExternalAccountClient | GoogleAuth<JSONClient> | OAuth2Client;

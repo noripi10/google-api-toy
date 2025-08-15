@@ -58,12 +58,12 @@ const checkToken = async (token: string) => {
   const data = await response.json();
 };
 
-let server: ServerType | undefined;
+export const getOauthClient = async (forceGenerate: boolean = false) => {
+  let server: ServerType | undefined;
 
-export const getOauthClient = async () => {
   try {
     const { clientId, clientSecret } = getCredentials();
-    const client = new google.auth.OAuth2({
+    let client = new google.auth.OAuth2({
       clientId,
       clientSecret,
     });
@@ -73,7 +73,7 @@ export const getOauthClient = async () => {
       cacheCredentials(tokens);
     });
 
-    if (!isAuto && (await loadCachedCredentials(client))) {
+    if (!forceGenerate && !isAuto && (await loadCachedCredentials(client))) {
       return client;
     }
 
@@ -145,8 +145,21 @@ export const getOauthClient = async () => {
 
     return client;
   } catch (err) {
+    // reject or refresh token not available
     console.error('❌️An unexpected error', err);
+    throw err;
+  } finally {
+    server?.close();
   }
+};
+
+export const getServiceAccount = () => {
+  const client = new google.auth.GoogleAuth({
+    keyFile: path.join(process.cwd(), 'service_account.json'),
+    scopes: SCOPES,
+  });
+
+  return client;
 };
 
 if (isAuto) {
@@ -160,7 +173,6 @@ if (isAuto) {
       console.log('end authenticate');
     })
     .finally(() => {
-      server?.close();
       setTimeout(() => {
         process.exit(0);
       }, 0);
